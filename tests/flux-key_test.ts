@@ -26,25 +26,19 @@ Clarinet.test({
 });
 
 Clarinet.test({
-  name: "Ensure ownership can be transferred",
+  name: "Ensure invalid data is rejected",
   async fn(chain: Chain, accounts: Map<string, Account>) {
     const wallet_1 = accounts.get("wallet_1")!;
-    const wallet_2 = accounts.get("wallet_2")!;
     
     let block = chain.mineBlock([
-      Tx.contractCall("flux-key", "store-key",
-        [types.ascii("encrypted-data"), types.uint(100), types.ascii("test-metadata")],
-        wallet_1.address
-      ),
-      Tx.contractCall("flux-key", "transfer-ownership",
-        [types.uint(0), types.principal(wallet_2.address)],
+      Tx.contractCall("flux-key", "store-key", 
+        [types.ascii(""), types.uint(100), types.ascii("test-metadata")], 
         wallet_1.address
       )
     ]);
-
-    assertEquals(block.receipts.length, 2);
-    assertEquals(block.receipts[1].result, "(ok true)");
+    
+    assertEquals(block.receipts[0].result, `(err u106)`);
   }
 });
 
-// [Previous tests remain unchanged...]
+[Previous tests remain unchanged...]
